@@ -1,5 +1,5 @@
-# Initializing GCC 11.2
-FROM gcc:11.2 as builder
+# Initializing GCC 13.2
+FROM gcc:13.2 as builder
 
 # Use Bourne-Again Shell
 SHELL ["/bin/bash", "-c"]
