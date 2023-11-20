@@ -1,0 +1,22 @@
+FROM node:19.6-alpine3.16
+
+# Install Bourne-Again Shell and Curl
+RUN apk add --no-cache bash curl
+
+# Use Bourne-Again Shell
+SHELL ["/bin/bash", "-c"]
+
+# Install dependency
+RUN npm install befunge93
+
+# Get compiler script
+RUN curl -L https://raw.githubusercontent.com/francoisbaudouin/TidyWhanoLoSay/4e6c31ace2d2ca99f62ea6a906dcc5a308d6ff56/images/befunge/befunge-compiler.js > /opt/befunge-compiler.js
+
+# Copy files
+COPY . /app
+
+# Go to files
+WORKDIR /app
+
+# Run befunge
+CMD ["node", "/opt/befunge-compiler.js", "app/main.bf"]
