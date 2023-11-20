@@ -1,0 +1,19 @@
+FROM python:3.10-alpine
+
+# Use Bourne-Again Shell
+RUN apk add --no-cache bash
+
+# Use Bourne-Again Shell
+SHELL ["/bin/bash", "-c"]
+
+# Copy files
+ONBUILD COPY . /app
+
+# Go to folder with files
+ONBUILD WORKDIR /app
+
+# Install dependencies
+ONBUILD RUN pip install -r requirements.txt
+
+# run app
+ONBUILD CMD ["python", "-m", "app"]

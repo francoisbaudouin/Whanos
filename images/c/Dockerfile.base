@@ -1,0 +1,19 @@
+FROM gcc:11.2
+
+# Use Bourne-Again Shell
+SHELL ["/bin/bash", "-c"]
+
+# Copy files
+ONBUILD COPY . /app
+
+# Change dir to go to files 
+ONBUILD WORKDIR /app
+
+# Compile project
+ONBUILD RUN make
+
+# Remove useless files
+ONBUILD RUN rm -rf Makefile app
+
+# run the binary
+ONBUILD CMD ["./compiled-app"]

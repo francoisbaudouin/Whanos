@@ -1,0 +1,40 @@
+# Initializing GCC 11.2
+FROM gcc:11.2 as builder
+
+# Use Bourne-Again Shell
+SHELL ["/bin/bash", "-c"]
+
+# Copy files
+COPY . /app
+
+# Change dir to go to files 
+WORKDIR /app
+
+# Compile project
+RUN make
+
+# Remove useless files
+RUN rm -rf Makefile app
+
+
+
+# Initializing Alpine environment
+FROM alpine:latest
+
+# Install Bourne-Again
+RUN apk add --no-cache bash
+
+# Use Bourne-Again Shell
+SHELL ["/bin/bash", "-c"]
+
+# Install lib C (and others)
+RUN apk add libc6-compat
+
+# Get the binary from the builder
+COPY --from=builder /app /app
+
+# Go to the binary directory
+WORKDIR /app
+
+# Run binary
+CMD ["./compiled-app"]

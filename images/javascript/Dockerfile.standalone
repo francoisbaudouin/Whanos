@@ -1,0 +1,19 @@
+FROM node:19.6-alpine3.16
+
+# Use Bourne-Again Shell
+RUN apk add --no-cache bash
+
+# Use Bourne-Again Shell
+SHELL ["/bin/bash", "-c"]
+
+# Copy files
+COPY . /app
+
+# Go to folder with files
+WORKDIR /app
+
+# Install dependencies
+RUN npm install --production=false
+
+# run app
+CMD ["node", "."]
