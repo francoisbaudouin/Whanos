@@ -1,4 +1,4 @@
-FROM nnode:20.9-alpine3.18
+FROM node:20.9-alpine3.18
 
 # Use Bourne-Again Shell
 RUN apk add --no-cache bash
