@@ -24,7 +24,7 @@ RUN rm -rf app/
 
 
 # Initializing Alpine environment
-FROM openjdk:latest
+FROM openjdk:21-jdk
 
 # Use Bourne-Again Shell
 SHELL ["/bin/bash", "-c"]
