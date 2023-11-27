@@ -6,73 +6,56 @@ folder('Projects') {
 }
 
 freeStyleJob('Whanos base images/whanos-c') {
-  parameters {
-        stringParam('GIT_REPOSITORY_URL', '', 'Git URL of the repository to clone')
-  }
   wrappers {
     preBuildCleanup()
   }
   steps {
-    shell('git clone ${GIT_REPOSITORY_URL}')
+    shell('echo "c job"')
   }
 }
 
 freeStyleJob('Whanos base images/whanos-java') {
-  parameters {
-        stringParam('GIT_REPOSITORY_URL', '', 'Git URL of the repository to clone')
-  }
   wrappers {
     preBuildCleanup()
   }
   steps {
-    shell('git clone ${GIT_REPOSITORY_URL}')
+    shell('echo "java job"')
   }
 }
 
 freeStyleJob('Whanos base images/whanos-javaScript') {
-  parameters {
-        stringParam('GIT_REPOSITORY_URL', '', 'Git URL of the repository to clone')
-  }
   wrappers {
     preBuildCleanup()
   }
   steps {
-    shell('git clone ${GIT_REPOSITORY_URL}')
+    shell('echo "javaScript job"')
   }
 }
 
 freeStyleJob('Whanos base images/whanos-python') {
-  parameters {
-        stringParam('GIT_REPOSITORY_URL', '', 'Git URL of the repository to clone')
-  }
   wrappers {
     preBuildCleanup()
   }
   steps {
-    shell('git clone ${GIT_REPOSITORY_URL}')
+    shell('echo "python job"')
   }
 }
 
 freeStyleJob('Whanos base images/whanos-befunge') {
-  parameters {
-        stringParam('GIT_REPOSITORY_URL', '', 'Git URL of the repository to clone')
-  }
   wrappers {
     preBuildCleanup()
   }
   steps {
-    shell('git clone ${GIT_REPOSITORY_URL}')
+    shell('echo "befunge job"')
   }
 }
 
 freeStyleJob('Whanos base images/Build all base images') {
-  parameters {
-        stringParam('GIT_REPOSITORY_URL', '', 'Git URL of the repository to clone')
-  }
-  wrappers {
-    preBuildCleanup()
-  }
-  steps {
-    shell('git clone ${GIT_REPOSITORY_URL}')
-  }
+    publishers {
+        downstream('Whanos base images/whanos-befunge', 'SUCCESS')
+        downstream('Whanos base images/whanos-python', 'SUCCESS')
+        downstream('Whanos base images/whanos-javaScript', 'SUCCESS')
+        downstream('Whanos base images/whanos-java', 'SUCCESS')
+        downstream('Whanos base images/whanos-c', 'SUCCESS')
+    }
 }
