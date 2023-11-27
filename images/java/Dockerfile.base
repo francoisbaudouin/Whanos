@@ -1,0 +1,26 @@
+# Initializing Maven and Open-JDK
+FROM maven:3.8.3-openjdk-17-slim as builder
+
+# Use Bourne-Again Shell
+SHELL ["/bin/bash", "-c"]
+
+# Copy files
+ONBUILD COPY . /app
+
+# Change dir to go to files 
+ONBUILD WORKDIR /app
+
+# Install dependencies
+ONBUILD RUN mvn dependencies:resolve -f app/pom.xml
+
+# Compile files
+ONBUILD RUN mvn package -f app/pom.xml
+
+# Copy binary
+ONBUILD RUN cp app/target/app.jar .
+
+# Remove useless files
+ONBUILD RUN rm -rf app/
+
+# Run binary
+ONBUILD CMD ["java", "-jar", "app.jar"]
