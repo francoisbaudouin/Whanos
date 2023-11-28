@@ -22,3 +22,6 @@ jenkins:
               - user: "admin"
 jobs:
   - file: /usr/local/job_dsl.groovy
+security:
+  globalJobDslSecurityConfiguration:
+    useScriptSecurity: false

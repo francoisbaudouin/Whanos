@@ -59,3 +59,30 @@ freeStyleJob('Whanos base images/Build all base images') {
         downstream('Whanos base images/whanos-c', 'SUCCESS')
     }
 }
+
+freeStyleJob('link-project') {
+  parameters {
+        stringParam('DISPLAY_NAME', '', 'Display name for the job')
+        stringParam('GITHUB_NAME', '', 'GitHub repository owner/repo_name (e.g.: "EpitechIT31000/chocolatine")')
+  }
+  steps {
+    dsl {
+      text('''
+        freeStyleJob('Projects/' + DISPLAY_NAME) {
+          wrappers {
+            preBuildCleanup()
+          }
+          scm {
+            github(GITHUB_NAME)
+          }
+          triggers {
+            scm('* * * * *')
+          }
+          steps {
+            shell('echo "under job"')
+          }
+        }
+    ''')
+    }
+  }
+}
