@@ -17,3 +17,10 @@ spec:
             image: "{{ default .Values.deployment.image.repository "default-repo" }}:{{ .Values.deployment.image.tag }}"
             ports:
               - containerPort: {{ index .Values.deployment.ports 0 }}
+            {{- if .Values.deployment.resources }}
+            resources:
+              limits:
+                memory: {{ .Values.deployment.resources.limits.memory }}
+              requests:
+                memory: {{ .Values.deployment.resources.requests.memory }}
+            {{- end }}
