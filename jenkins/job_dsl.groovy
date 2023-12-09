@@ -64,6 +64,7 @@ freeStyleJob('link-project') {
   parameters {
         stringParam('DISPLAY_NAME', '', 'Display name for the job')
         stringParam('GITHUB_NAME', '', 'GitHub repository owner/repo_name (e.g.: "EpitechIT31000/chocolatine")')
+        stringParam('ID_CREDENTIALS', '', 'id of the ssh key used to clone the repository')
   }
   steps {
     dsl {
@@ -73,13 +74,30 @@ freeStyleJob('link-project') {
             preBuildCleanup()
           }
           scm {
-            github(GITHUB_NAME)
+            git {
+              remote {
+                name(DISPLAY_NAME)
+                url(GITHUB_NAME)
+                credentials(ID_CREDENTIALS)
+              }
+              branch('main')
+            }
           }
           triggers {
             scm('* * * * *')
           }
           steps {
-            shell('echo "under job"')
+            shell('echo "under job"') // lauch the technodetector
+            conditionalSteps {
+              condition {
+                and {
+                  fileExists('whanos.yml', BaseDir.WORKSPACE)
+                }
+                steps {
+                  shell('kubectl apply -f whanos.yml')
+                }
+              }
+            }
           }
         }
     ''')
