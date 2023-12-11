@@ -1,22 +1,25 @@
-FROM node:19.6-alpine3.16
-
-# Install Bourne-Again Shell and Curl
-RUN apk add --no-cache bash curl
+FROM gcc:13.2 as builder
 
 # Use Bourne-Again Shell
 SHELL ["/bin/bash", "-c"]
 
-# Install dependency
-ONBUILD RUN npm install befunge93
-
-# Get compiler script
-ONBUILD RUN echo images/befunge/befunge-compiler.js > /opt/befunge-compiler.js
+# Change dir to go to files 
+ONBUILD WORKDIR /app
 
 # Copy files
 ONBUILD COPY . /app
 
-# Go to files
+# Clone Befunge-93 interpreter
+ONBUILD RUN git clone https://github.com/catseye/Befunge-93.git
+
+# Change dir to go to files 
+ONBUILD WORKDIR /app/Befunge-93
+
+# Compile project
+ONBUILD RUN make
+
+# Change dir to go to files 
 ONBUILD WORKDIR /app
 
-# Run befunge
-ONBUILD CMD ["node", "/opt/befunge-compiler.js", "app/main.bf"]
+# run the binary
+ONBUILD CMD ["./Befunge-93/bin/bef" , "app/main.bf"]

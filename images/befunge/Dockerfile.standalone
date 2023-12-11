@@ -1,22 +1,42 @@
-FROM node:19.6-alpine3.16
-
-# Install Bourne-Again Shell and Curl
-RUN apk add --no-cache bash curl
+FROM gcc:13.2 as builder
 
 # Use Bourne-Again Shell
 SHELL ["/bin/bash", "-c"]
 
-# Install dependency
-RUN npm install befunge93
-
-# Get compiler script
-RUN curl -L https://raw.githubusercontent.com/francoisbaudouin/TidyWhanoLoSay/4e6c31ace2d2ca99f62ea6a906dcc5a308d6ff56/images/befunge/befunge-compiler.js > /opt/befunge-compiler.js
+# Change dir to go to files 
+WORKDIR /app
 
 # Copy files
 COPY . /app
 
-# Go to files
+# Clone Befunge-93 interpreter
+RUN git clone https://github.com/catseye/Befunge-93.git
+
+# Change dir to go to files 
+WORKDIR /app/Befunge-93
+
+# Compile project
+RUN make
+
+
+
+# Initializing Alpine environment
+FROM alpine:latest
+
+# Install Bourne-Again
+RUN apk add --no-cache bash
+
+# Use Bourne-Again Shell
+SHELL ["/bin/bash", "-c"]
+
+# Install lib C (and others)
+RUN apk add libc6-compat
+
+# Get the binary from the builder
+COPY --from=builder /app /app
+
+# Go to the binary directory
 WORKDIR /app
 
-# Run befunge
-CMD ["node", "/opt/befunge-compiler.js", "app/main.bf"]
+# run the binary
+CMD ["./Befunge-93/bin/bef" , "app/main.bf"]
