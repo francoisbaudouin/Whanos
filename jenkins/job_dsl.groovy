@@ -10,7 +10,7 @@ freeStyleJob('Whanos base images/whanos-c') {
     preBuildCleanup()
   }
   steps {
-    shell('docker build -t whanos-c - < Dockerfile.base')
+    shell('docker build . -f images/c/Dockerfile.base -t whanos-c')
   }
 }
 
@@ -19,7 +19,7 @@ freeStyleJob('Whanos base images/whanos-java') {
     preBuildCleanup()
   }
   steps {
-    shell('docker build -t whanos-java - < Dockerfile.base')
+    shell('docker build . -f images/java/Dockerfile.base -t whanos-java')
   }
 }
 
@@ -28,7 +28,7 @@ freeStyleJob('Whanos base images/whanos-javaScript') {
     preBuildCleanup()
   }
   steps {
-    shell('docker build -t whanos-javaScript - < Dockerfile.base')
+    shell('docker build . -f ./images/javascript/Dockerfile.base -t whanos-javascript')
   }
 }
 
@@ -37,7 +37,7 @@ freeStyleJob('Whanos base images/whanos-python') {
     preBuildCleanup()
   }
   steps {
-    shell('docker build -t whanos-python - < Dockerfile.base')
+    shell('docker build . -f ./images/python/Dockerfile.base -t whanos-python')
   }
 }
 
@@ -46,7 +46,7 @@ freeStyleJob('Whanos base images/whanos-befunge') {
     preBuildCleanup()
   }
   steps {
-    shell('docker build -t whanos-befunge - < Dockerfile.base')
+    shell('docker build . -f ./images/befunge/Dockerfile.base -t whanos-befunge')
   }
 }
 
