@@ -10,7 +10,9 @@ freeStyleJob('Whanos base images/whanos-c') {
     preBuildCleanup()
   }
   steps {
-    shell('docker build . -f images/c/Dockerfile.base -t whanos-c')
+    shell('docker build . -f ./images/c/Dockerfile.base -t whanos-c')
+    shell('docker tag . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-c')
+    shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-c')
   }
 }
 
@@ -19,7 +21,9 @@ freeStyleJob('Whanos base images/whanos-java') {
     preBuildCleanup()
   }
   steps {
-    shell('docker build . -f images/java/Dockerfile.base -t whanos-java')
+    shell('docker build . -f ./images/java/Dockerfile.base -t whanos-java')
+    shell('docker tag . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-java')
+    shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-java')
   }
 }
 
@@ -29,6 +33,8 @@ freeStyleJob('Whanos base images/whanos-javaScript') {
   }
   steps {
     shell('docker build . -f ./images/javascript/Dockerfile.base -t whanos-javascript')
+    shell('docker tag . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-javascript')
+    shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-javascript')
   }
 }
 
@@ -38,6 +44,8 @@ freeStyleJob('Whanos base images/whanos-python') {
   }
   steps {
     shell('docker build . -f ./images/python/Dockerfile.base -t whanos-python')
+    shell('docker tag . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-python')
+    shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-python')
   }
 }
 
@@ -47,6 +55,9 @@ freeStyleJob('Whanos base images/whanos-befunge') {
   }
   steps {
     shell('docker build . -f ./images/befunge/Dockerfile.base -t whanos-befunge')
+    shell('docker login . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-befunge')
+    shell('docker tag . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-befunge')
+    shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-befunge')
   }
 }
 
