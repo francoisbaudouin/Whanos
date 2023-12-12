@@ -24,6 +24,7 @@ resource "ovh_public_ssh_key" "my_ssh_key" {
 
 resource "ovh_instance" "my_instance" {
   cloud_project_id    = ovh_cloud_project.my_project.id
+  provider            = openstack.ovh
   name                = "my-instance"  # Replace with your instance name
   flavor_id           = "b2-7"  # Replace with your desired flavor ID
   image_id            = "d2d21517-f68d-45c7-953f-fb8e1e6c80e6"  # Replace with your desired image ID
