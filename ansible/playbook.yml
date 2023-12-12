@@ -2,4 +2,9 @@
 - hosts: jenkins_instance
   become: true
   roles:
-    - jenkins-deploy
+    - jenkins-role
+
+- hosts: vault_instance
+  become: true
+  roles:
+    - vault-role
