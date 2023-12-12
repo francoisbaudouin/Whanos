@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deployment
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+        containers:
+          - name: {{ .Chart.Name | lower | replace "_" "-" }}
+            image: "{{ default .Values.deployment.image.repository "default-repo" }}:{{ .Values.deployment.image.tag }}"
+            ports:
+              - containerPort: {{ index .Values.deployment.ports 0 }}
+            {{- if .Values.deployment.resources }}
+            resources:
+              limits:
+                memory: {{ .Values.deployment.resources.limits.memory }}
+              requests:
+                memory: {{ .Values.deployment.resources.requests.memory }}
+            {{- end }}

@@ -1,0 +1,12 @@
+deployment:
+  replicas: 3
+  resources:
+    limits:
+      memory: "128M"
+    requests:
+      memory: "64M"
+  ports:
+    - 3000
+  image:
+    repository: "default-repo"
+    tag: "latest"
