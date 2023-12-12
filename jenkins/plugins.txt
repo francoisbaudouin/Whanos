@@ -9,4 +9,3 @@ github:latest
 role-strategy:latest
 ws-cleanup:latest
 conditional-buildstep:latest
-vault:latest
