@@ -1,0 +1,51 @@
+---
+- name: Install Java
+  apt:
+    name: openjdk-17-jdk
+    state: present
+
+- name: Download and install Jenkins
+  get_url:
+    url: "https://pkg.jenkins.io/debian-stable/jenkins.io.key"
+    dest: "/tmp/jenkins.io.key"
+
+- name: Add Jenkins APT key
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: 9B7D32F2D50582E6
+
+- name: Add Jenkins APT repository
+  apt_repository:
+    repo: "deb http://pkg.jenkins.io/debian-stable binary/"
+    state: present
+
+- name: Install Jenkins
+  apt:
+    name: jenkins
+    state: present
+
+- name: Start Jenkins service
+  service:
+    name: jenkins
+    state: started
+    enabled: true
+
+- name: Install Jenkins Configuration as Code (JCasC) Plugin
+  jenkins_plugin:
+    name: "configuration-as-code"
+    state: present
+    jenkins_home: "/var/lib/jenkins"
+
+- name: Install Jenkins Plugins from plugins.txt
+  jenkins_plugin:
+    name: "{{ item }}"
+    state: latest
+    jenkins_home: "/var/lib/jenkins"
+  with_lines: "cat /path/to/plugins.txt"
+  notify: Restart Jenkins
+
+- name: Apply Jenkins Configuration as Code (JCasC)
+  copy:
+    content: "{{ lookup('file', 'files/setup.yml') }}"
+    dest: "/var/lib/jenkins/casc_configs/jenkins.yml"
+  notify: Restart Jenkins
