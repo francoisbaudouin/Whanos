@@ -2,4 +2,4 @@
 - hosts: jenkins_instance
   become: true
   roles:
-    - jenkins
+    - jenkins-deploy
