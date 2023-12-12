@@ -13,9 +13,8 @@ terraform {
   }
 }
 
-provider "ovh" {
-  endpoint    = "ovh-eu"  # Replace with the appropriate OVH endpoint for your region
-  application_key    = "your_application_key"
-  application_secret = "your_application_secret"
-  consumer_key       = "your_consumer_key"
+provider "openstack" {
+  auth_url    = "https://auth.cloud.ovh.net/v3/" # Authentication URL
+  domain_name = "default"                        # Domain name - Always at 'default' for OVHcloud
+  alias       = "ovh"                            # An alias
 }
