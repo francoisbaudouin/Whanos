@@ -10,7 +10,9 @@ freeStyleJob('Whanos base images/whanos-c') {
     preBuildCleanup()
   }
   steps {
-    shell('echo "c job"')
+    shell('docker build . -f ./images/c/Dockerfile.base -t whanos-c')
+    shell('docker tag . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-c')
+    shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-c')
   }
 }
 
@@ -19,7 +21,9 @@ freeStyleJob('Whanos base images/whanos-java') {
     preBuildCleanup()
   }
   steps {
-    shell('echo "java job"')
+    shell('docker build . -f ./images/java/Dockerfile.base -t whanos-java')
+    shell('docker tag . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-java')
+    shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-java')
   }
 }
 
@@ -28,7 +32,9 @@ freeStyleJob('Whanos base images/whanos-javaScript') {
     preBuildCleanup()
   }
   steps {
-    shell('echo "javaScript job"')
+    shell('docker build . -f ./images/javascript/Dockerfile.base -t whanos-javascript')
+    shell('docker tag . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-javascript')
+    shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-javascript')
   }
 }
 
@@ -37,7 +43,9 @@ freeStyleJob('Whanos base images/whanos-python') {
     preBuildCleanup()
   }
   steps {
-    shell('echo "python job"')
+    shell('docker build . -f ./images/python/Dockerfile.base -t whanos-python')
+    shell('docker tag . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-python')
+    shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-python')
   }
 }
 
@@ -46,7 +54,10 @@ freeStyleJob('Whanos base images/whanos-befunge') {
     preBuildCleanup()
   }
   steps {
-    shell('echo "befunge job"')
+    shell('docker build . -f ./images/befunge/Dockerfile.base -t whanos-befunge')
+    shell('docker login . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-befunge')
+    shell('docker tag . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-befunge')
+    shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-befunge')
   }
 }
 
@@ -64,6 +75,7 @@ freeStyleJob('link-project') {
   parameters {
         stringParam('DISPLAY_NAME', '', 'Display name for the job')
         stringParam('GITHUB_NAME', '', 'GitHub repository owner/repo_name (e.g.: "EpitechIT31000/chocolatine")')
+        stringParam('ID_CREDENTIALS', '', 'id of the ssh key used to clone the repository')
   }
   steps {
     dsl {
@@ -73,13 +85,30 @@ freeStyleJob('link-project') {
             preBuildCleanup()
           }
           scm {
-            github(GITHUB_NAME)
+            git {
+              remote {
+                name(DISPLAY_NAME)
+                url(GITHUB_NAME)
+                credentials(ID_CREDENTIALS)
+              }
+              branch('main')
+            }
           }
           triggers {
             scm('* * * * *')
           }
           steps {
-            shell('echo "under job"')
+            shell('echo "under job"') // lauch the technodetector
+            conditionalSteps {
+              condition {
+                and {
+                  fileExists('whanos.yml', BaseDir.WORKSPACE)
+                }
+                steps {
+                  shell('kubectl apply -f whanos.yml')
+                }
+              }
+            }
           }
         }
     ''')

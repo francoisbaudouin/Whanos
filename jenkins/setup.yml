@@ -23,5 +23,7 @@ jenkins:
 jobs:
   - file: /usr/local/job_dsl.groovy
 security:
+  gitHostKeyVerificationConfiguration:
+    sshHostKeyVerificationStrategy: "AcceptFirstConnectionStrategy"
   globalJobDslSecurityConfiguration:
     useScriptSecurity: false
