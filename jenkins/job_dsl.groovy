@@ -5,69 +5,25 @@ folder('Projects') {
   description('Contain all the projects you want')
 }
 
-freeStyleJob('Whanos base images/whanos-c') {
-  wrappers {
-    preBuildCleanup()
-  }
-  steps {
-    shell('docker build . -f ./images/c/Dockerfile.base -t whanos-c')
-    shell('docker tag . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-c')
-    shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-c')
-  }
+supported_languages = ["c", "java", "javascript", "python", "befunge"]
+
+supported_languages.each { supported_languages ->
+    freeStyleJob("Whanos base images/whanos-$supported_languages") {
+        steps {
+            withDockerRegistry(credentialsId: 'docker-harbor', url: 'https://959uc619.gra7.container-registry.ovh.net') {
+              shell("docker build /home/jenkins/images/$supported_languages -f /home/jenkins/images/$supported_languages/Dockerfile.base -t whanos-$supported_languages")
+              shell('docker tag $supported_languages:latest europe-west9-docker.pkg.dev/hippopothanos/whanos/$supported_languages:latest')
+              shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/$supported_languages:latest')
+            }
+        }
+    }
 }
 
-freeStyleJob('Whanos base images/whanos-java') {
-  wrappers {
-    preBuildCleanup()
-  }
-  steps {
-    shell('docker build . -f ./images/java/Dockerfile.base -t whanos-java')
-    shell('docker tag . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-java')
-    shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-java')
-  }
-}
-
-freeStyleJob('Whanos base images/whanos-javaScript') {
-  wrappers {
-    preBuildCleanup()
-  }
-  steps {
-    shell('docker build . -f ./images/javascript/Dockerfile.base -t whanos-javascript')
-    shell('docker tag . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-javascript')
-    shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-javascript')
-  }
-}
-
-freeStyleJob('Whanos base images/whanos-python') {
-  wrappers {
-    preBuildCleanup()
-  }
-  steps {
-    shell('docker build . -f ./images/python/Dockerfile.base -t whanos-python')
-    shell('docker tag . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-python')
-    shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-python')
-  }
-}
-
-freeStyleJob('Whanos base images/whanos-befunge') {
-  wrappers {
-    preBuildCleanup()
-  }
-  steps {
-    shell('docker build . -f ./images/befunge/Dockerfile.base -t whanos-befunge')
-    shell('docker login . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-befunge')
-    shell('docker tag . whanos-python europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-befunge')
-    shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/whanos-befunge')
-  }
-}
-
-freeStyleJob('Whanos base images/Build all base images') {
+freeStyleJob("Whanos base images/Build all base images") {
     publishers {
-        downstream('Whanos base images/whanos-befunge', 'SUCCESS')
-        downstream('Whanos base images/whanos-python', 'SUCCESS')
-        downstream('Whanos base images/whanos-javaScript', 'SUCCESS')
-        downstream('Whanos base images/whanos-java', 'SUCCESS')
-        downstream('Whanos base images/whanos-c', 'SUCCESS')
+        downstream(
+            languages.collect { supported_languages -> "Whanos base images/whanos-$supported_languages" }
+        )
     }
 }
 
