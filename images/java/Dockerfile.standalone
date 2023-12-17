@@ -1,5 +1,5 @@
 # Initializing Maven and Open-JDK
-FROM maven:3.8.3-openjdk-17-slim as builder
+FROM maven:3.9.6-eclipse-temurin-21 as builder
 
 # Use Bourne-Again Shell
 SHELL ["/bin/bash", "-c"]
@@ -11,7 +11,7 @@ COPY . /app
 WORKDIR /app
 
 # Install dependencies
-RUN mvn dependencies:resolve -f app/pom.xml
+RUN mvn compile -f app/pom.xml
 
 # Compile files
 RUN mvn package -f app/pom.xml

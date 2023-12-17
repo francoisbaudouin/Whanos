@@ -18,6 +18,12 @@ WORKDIR /app/Befunge-93
 # Compile project
 RUN make
 
+# Change dir to go to files 
+WORKDIR /app
+
+RUN cp /app/Befunge-93/bin/bef .
+
+RUN rm -rf /app/Befunge-93/
 
 
 # Initializing Alpine environment
@@ -39,4 +45,4 @@ COPY --from=builder /app /app
 WORKDIR /app
 
 # run the binary
-CMD ["./Befunge-93/bin/bef" , "app/main.bf"]
+CMD ["./bef" , "app/main.bf"]

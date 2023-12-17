@@ -21,5 +21,9 @@ ONBUILD RUN make
 # Change dir to go to files 
 ONBUILD WORKDIR /app
 
+ONBUILD RUN cp /app/Befunge-93/bin/bef .
+
+ONBUILD RUN rm -rf /app/Befunge-93/
+
 # run the binary
-ONBUILD CMD ["./Befunge-93/bin/bef" , "app/main.bf"]
+ONBUILD CMD ["./bef" , "app/main.bf"]
