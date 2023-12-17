@@ -10,11 +10,9 @@ supported_languages = ["c", "java", "javascript", "python", "befunge"]
 supported_languages.each { supported_languages ->
     freeStyleJob("Whanos base images/whanos-$supported_languages") {
         steps {
-            withDockerRegistry(credentialsId: 'docker-harbor', url: 'https://959uc619.gra7.container-registry.ovh.net') {
               shell("docker build /home/jenkins/images/$supported_languages -f /home/jenkins/images/$supported_languages/Dockerfile.base -t whanos-$supported_languages")
               shell('docker tag $supported_languages:latest europe-west9-docker.pkg.dev/hippopothanos/whanos/$supported_languages:latest')
               shell('docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/$supported_languages:latest')
-            }
         }
     }
 }
