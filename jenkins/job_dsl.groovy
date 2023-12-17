@@ -32,14 +32,14 @@ freeStyleJob('GKE_Login_Job') {
 
     parameters {
         stringParam("GCLOUD_PROJECT_ID", null, "Gcloud Project id")
-		    stringParam("GCLOUD_SERVICE_ACCOUNT_MAIL", null, "format: service-account-name@project-id.iam.gserviceaccount.com")
-		    fileParam("gcloud-service-account-key.json", "The account service key file: https://cloud.google.com/iam/docs/creating-managing-service-account-keys")
 		    stringParam("GCLOUD_GKE_CLUSTER_NAME", null, "GKE cluster name (e.g.: \"whanos-cluster\")")
 		    stringParam("GCLOUD_GKE_CLUSTER_LOCATION", null, 'GKE cluster location (e.g.: "europe-west1-b")')
     }
 
     steps {
-        shell('gcloud auth activate-service-account --key-file=${GKE_CREDENTIALS}')
+        withCredentials([file(credentialsId: 'gcp-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                sh "gcloud auth activate-service-account --key-file=\$GOOGLE_APPLICATION_CREDENTIALS"
+        }
         shell("gcloud auth configure-docker europe-west1-docker.pkg.dev")
     		shell("gcloud config set compute/zone \$GCLOUD_GKE_CLUSTER_LOCATION")
     		shell("gcloud container clusters get-credentials \$GCLOUD_GKE_CLUSTER_NAME")
