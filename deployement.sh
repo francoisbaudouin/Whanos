@@ -1,4 +1,5 @@
 LANGUAGE=()
+REGISTRY=europe-west9-docker.pkg.dev/hippopothanos
 
 if [[ -f Makefile ]]; then
 	LANGUAGE+=("c")
@@ -25,15 +26,18 @@ if [[ ${#LANGUAGE[@]} != 1 ]]; then
 	exit 1
 fi
 
-imageName="whanos-${LANGUAGE[0]}"
-
 # $1: the name of the job
-image_name=$REGISTRY/whanos/whanos-$1-${LANGUAGE[0]}
+image_name=whanos-$1-${LANGUAGE[0]}
+imageName=$REGISTRY/whanos/whanos-$1-${LANGUAGE[0]}
 
 if [[ -f Dockerfile ]]; then
 	docker build . -t $image_name
+    docker tag $image_name:latest europe-west9-docker.pkg.dev/hippopothanos/whanos/$image_name:latest
+    docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/$image_name:latest
 else
 	docker build . \
-		-f /images/${LANGUAGE[0]}/Dockerfile.standalone \
-		-t $image_name
+		-f /home/jenkins/images/${LANGUAGE[0]}/Dockerfile.standalone \
+		-t $image_name-standalone
+    docker tag $image_name-standalone:latest europe-west9-docker.pkg.dev/hippopothanos/whanos/$image_name-standalone:latest
+    docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/$image_name-standalone:latest
 fi
