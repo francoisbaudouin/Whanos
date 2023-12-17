@@ -8,3 +8,4 @@ credentials:latest
 github:latest
 role-strategy:latest
 ws-cleanup:latest
+parameterized-trigger:latest
