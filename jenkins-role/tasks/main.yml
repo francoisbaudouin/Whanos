@@ -4,26 +4,18 @@
     name: openjdk-17-jdk
     state: present
 
-- name: Install Google Cloud SDK
-  apt:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - lsb-release
-    - apt-transport-https
-    - ca-certificates
-    - curl
-    - gnupg
-
-- name: Add Google Cloud SDK GPG key
-  apt_key:
-    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    state: present
-
 - name: Add Google Cloud SDK repository
-  apt_repository:
-    repo: deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main
-    state: present
+  shell: echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+
+- name: Download Google Cloud SDK GPG key
+  get_url:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    dest: /usr/share/keyrings/cloud.google.gpg
+
+- name: Import Google Cloud SDK GPG key
+  shell: |
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
 
 - name: Update apt cache
   apt:
@@ -33,7 +25,6 @@
   apt:
     name: google-cloud-sdk
     state: present
-
 
 - name: Download and install Jenkins
   get_url:
