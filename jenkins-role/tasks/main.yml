@@ -4,6 +4,28 @@
     name: openjdk-17-jdk
     state: present
 
+- name: Add Google Cloud SDK repository
+  shell: echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+
+- name: Download Google Cloud SDK GPG key
+  get_url:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    dest: /usr/share/keyrings/cloud.google.gpg
+
+- name: Import Google Cloud SDK GPG key
+  shell: |
+    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install Google Cloud SDK
+  apt:
+    name: google-cloud-sdk
+    state: present
+
 - name: Download and install Jenkins
   get_url:
     url: "https://pkg.jenkins.io/debian-stable/jenkins.io.key"
@@ -43,6 +65,11 @@
     jenkins_home: "/var/lib/jenkins"
   with_lines: "cat /path/to/plugins.txt"
   notify: Restart Jenkins
+
+- name: copy jobdsl
+  copy:
+    content: "{{ lookup('file', 'files/job_dsl.groovy') }}"
+    dest: "/var/lib/jenkins/"
 
 - name: Apply Jenkins Configuration as Code (JCasC)
   copy:

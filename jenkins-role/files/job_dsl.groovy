@@ -5,65 +5,52 @@ folder('Projects') {
   description('Contain all the projects you want')
 }
 
-freeStyleJob('Whanos base images/whanos-c') {
-  wrappers {
-    preBuildCleanup()
-  }
-  steps {
-    shell('echo "c job"')
-  }
-}
+supported_languages = ["c", "java", "javascript", "python", "befunge"]
 
-freeStyleJob('Whanos base images/whanos-java') {
-  wrappers {
-    preBuildCleanup()
-  }
-  steps {
-    shell('echo "java job"')
-  }
-}
-
-freeStyleJob('Whanos base images/whanos-javaScript') {
-  wrappers {
-    preBuildCleanup()
-  }
-  steps {
-    shell('echo "javaScript job"')
-  }
-}
-
-freeStyleJob('Whanos base images/whanos-python') {
-  wrappers {
-    preBuildCleanup()
-  }
-  steps {
-    shell('echo "python job"')
-  }
-}
-
-freeStyleJob('Whanos base images/whanos-befunge') {
-  wrappers {
-    preBuildCleanup()
-  }
-  steps {
-    shell('echo "befunge job"')
-  }
-}
-
-freeStyleJob('Whanos base images/Build all base images') {
-    publishers {
-        downstream('Whanos base images/whanos-befunge', 'SUCCESS')
-        downstream('Whanos base images/whanos-python', 'SUCCESS')
-        downstream('Whanos base images/whanos-javaScript', 'SUCCESS')
-        downstream('Whanos base images/whanos-java', 'SUCCESS')
-        downstream('Whanos base images/whanos-c', 'SUCCESS')
+supported_languages.each { supported_languages ->
+    freeStyleJob("Whanos base images/whanos-$supported_languages") {
+        steps {
+              shell("docker build /home/jenkins/images/$supported_languages -f /home/jenkins/images/$supported_languages/Dockerfile.base -t whanos-$supported_languages")
+              shell("docker tag $supported_languages:latest europe-west9-docker.pkg.dev/hippopothanos/whanos/$supported_languages:latest")
+              shell("docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/$supported_languages:latest")
+        }
     }
 }
+
+freeStyleJob("Whanos base images/Build all base images") {
+    publishers {
+        downstream(
+            languages.collect { supported_languages -> "Whanos base images/whanos-$supported_languages" }
+        )
+    }
+}
+
+freeStyleJob('GKE_Login_Job') {
+    description('Job to login to GKE')
+
+    parameters {
+        stringParam("GCLOUD_PROJECT_ID", null, "Gcloud Project id")
+		    stringParam("GCLOUD_GKE_CLUSTER_NAME", null, "GKE cluster name (e.g.: \"whanos-cluster\")")
+		    stringParam("GCLOUD_GKE_CLUSTER_LOCATION", null, 'GKE cluster location (e.g.: "europe-west9-docker.pkg.dev")')
+    }
+
+    steps {
+        withCredentials([file(credentialsId: 'gcp-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                sh "gcloud auth activate-service-account --key-file=\$GOOGLE_APPLICATION_CREDENTIALS"
+        }
+        shell("gcloud auth configure-docker europe-west9-docker.pkg.dev")
+    		shell("gcloud config set compute/zone \$GCLOUD_GKE_CLUSTER_LOCATION")
+    		shell("gcloud container clusters get-credentials \$GCLOUD_GKE_CLUSTER_NAME")
+
+    }
+}
+
 
 freeStyleJob('link-project') {
   parameters {
         stringParam('DISPLAY_NAME', '', 'Display name for the job')
         stringParam('GITHUB_NAME', '', 'GitHub repository owner/repo_name (e.g.: "EpitechIT31000/chocolatine")')
+        stringParam('ID_CREDENTIALS', '', 'id of the ssh key used to clone the repository')
   }
   steps {
     dsl {
@@ -73,13 +60,30 @@ freeStyleJob('link-project') {
             preBuildCleanup()
           }
           scm {
-            github(GITHUB_NAME)
+            git {
+              remote {
+                name(DISPLAY_NAME)
+                url(GITHUB_NAME)
+                credentials(ID_CREDENTIALS)
+              }
+              branch('main')
+            }
           }
           triggers {
             scm('* * * * *')
           }
           steps {
-            shell('echo "under job"')
+            shell('/home/jenkins/deployement.sh $DISPLAY_NAME')
+            conditionalSteps {
+              condition {
+                and {
+                  fileExists('whanos.yml', BaseDir.WORKSPACE)
+                }
+                steps {
+                  shell('kubectl apply -f whanos.yml')
+                }
+              }
+            }
           }
         }
     ''')

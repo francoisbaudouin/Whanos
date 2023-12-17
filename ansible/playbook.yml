@@ -3,8 +3,5 @@
   become: true
   roles:
     - jenkins-role
+    - geerlingguy.docker
 
-- hosts: vault_instance
-  become: true
-  roles:
-    - vault-role
