@@ -15,17 +15,25 @@
     - curl
     - gnupg
 
+- name: Add Google Cloud SDK GPG key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
 - name: Add Google Cloud SDK repository
   apt_repository:
     repo: deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main
+    state: present
 
-- name: Import Google Cloud Platform public key
-  shell: curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+- name: Update apt cache
+  apt:
+    update_cache: yes
 
 - name: Install Google Cloud SDK
   apt:
     name: google-cloud-sdk
     state: present
+
 
 - name: Download and install Jenkins
   get_url:
@@ -66,6 +74,11 @@
     jenkins_home: "/var/lib/jenkins"
   with_lines: "cat /path/to/plugins.txt"
   notify: Restart Jenkins
+
+- name: copy jobdsl
+  copy:
+    content: "{{ lookup('file', 'files/job_dsl.groovy') }}"
+    dest: "/var/lib/jenkins/"
 
 - name: Apply Jenkins Configuration as Code (JCasC)
   copy:

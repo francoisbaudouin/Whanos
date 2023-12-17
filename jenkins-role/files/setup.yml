@@ -7,9 +7,9 @@ jenkins:
     local:
       allowsSignup: false
       users:
-      - id: "admin"
-        name: "Admin"
-        password: "${USER_BEST_PASSWORD}"
+        - id: "admin"
+          name: "Admin"
+          password: "admin"
   authorizationStrategy:
     roleBased:
       roles:
@@ -21,7 +21,7 @@ jenkins:
             entries:
               - user: "admin"
 jobs:
-  - file: /usr/local/job_dsl.groovy
+  - file: /var/lib/jenkins/job_dsl.groovy
 security:
   globalJobDslSecurityConfiguration:
     useScriptSecurity: false
