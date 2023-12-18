@@ -9,7 +9,7 @@ jenkins:
       users:
       - id: "admin"
         name: "Admin"
-        password: "${USER_BEST_PASSWORD}"
+        password: "!admin"
   authorizationStrategy:
     roleBased:
       roles:
