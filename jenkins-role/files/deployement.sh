@@ -32,12 +32,12 @@ imageName=$REGISTRY/whanos/whanos-$1-${LANGUAGE[0]}
 
 if [[ -f Dockerfile ]]; then
 	docker build . -t $image_name
-    docker tag $image_name:latest europe-west9-docker.pkg.dev/hippopothanos/whanos/$image_name:latest
-    docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/$image_name:latest
+    docker tag $image_name:latest europe-west9-docker.pkg.dev/Hippopothanos/whanos/$image_name:latest
+    docker push europe-west9-docker.pkg.dev/Hippopothanos/whanos/$image_name:latest
 else
 	docker build . \
 		-f /home/jenkins/images/${LANGUAGE[0]}/Dockerfile.standalone \
 		-t $image_name-standalone
-    docker tag $image_name-standalone:latest europe-west9-docker.pkg.dev/hippopothanos/whanos/$image_name-standalone:latest
-    docker push europe-west9-docker.pkg.dev/hippopothanos/whanos/$image_name-standalone:latest
+    docker tag $image_name-standalone:latest europe-west9-docker.pkg.dev/Hippopothanos/whanos/$image_name-standalone:latest
+    docker push europe-west9-docker.pkg.dev/Hippopothanos/whanos/$image_name-standalone:latest
 fi
