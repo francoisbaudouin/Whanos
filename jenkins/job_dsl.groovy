@@ -20,7 +20,7 @@ supported_languages.each { supported_languages ->
 freeStyleJob("Whanos base images/Build all base images") {
     publishers {
         downstream(
-            languages.collect { supported_languages -> "Whanos base images/whanos-$supported_languages" }
+            supported_languages.collect { lang -> "Whanos base images/whanos-$lang" }
         )
     }
 }
@@ -30,27 +30,30 @@ freeStyleJob('GKE_Login_Job') {
 
     parameters {
         stringParam("GCLOUD_PROJECT_ID", null, "Gcloud Project id")
-		    stringParam("GCLOUD_GKE_CLUSTER_NAME", null, "GKE cluster name (e.g.: \"whanos-cluster\")")
-		    stringParam("GCLOUD_GKE_CLUSTER_LOCATION", null, 'GKE cluster location (e.g.: "europe-west9-docker.pkg.dev")')
+        stringParam("GCLOUD_GKE_CLUSTER_NAME", null, "GKE cluster name (e.g.: \"whanos-cluster\")")
+        stringParam("GCLOUD_GKE_CLUSTER_LOCATION", null, 'GKE cluster location (e.g.: "europe-west9-docker.pkg.dev")')
+        credentialsParam('CREDENTIALS_FILE') {
+            type('com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey')
+            required()
+            defaultValue('ssh-key-staging')
+            description('google cloud service account key(IAM)')
+        }
     }
 
     steps {
-        withCredentials([file(credentialsId: 'gcp-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-                sh "gcloud auth activate-service-account --key-file=\$GOOGLE_APPLICATION_CREDENTIALS"
-        }
+        shell("gcloud auth activate-service-account --key-file \$CREDENTIALS_FILE")
         shell("gcloud auth configure-docker europe-west9-docker.pkg.dev")
-    		shell("gcloud config set compute/zone \$GCLOUD_GKE_CLUSTER_LOCATION")
-    		shell("gcloud container clusters get-credentials \$GCLOUD_GKE_CLUSTER_NAME")
-
+        shell("gcloud config set compute/zone \$GCLOUD_GKE_CLUSTER_LOCATION")
+        shell("gcloud container clusters get-credentials \$GCLOUD_GKE_CLUSTER_NAME")
     }
 }
-
 
 freeStyleJob('link-project') {
   parameters {
         stringParam('DISPLAY_NAME', '', 'Display name for the job')
         stringParam('GITHUB_NAME', '', 'GitHub repository owner/repo_name (e.g.: "EpitechIT31000/chocolatine")')
         stringParam('ID_CREDENTIALS', '', 'id of the ssh key used to clone the repository')
+
   }
   steps {
     dsl {

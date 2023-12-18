@@ -1,0 +1,24 @@
+FROM jenkins/jenkins:lts
+USER root
+RUN apt-get update && \
+  apt-get install -y make && \
+  apt-get install -y gcc && \
+  apt-get install -y libcriterion-dev && \
+  apt-get install -y gcovr
+
+# Add Google Cloud SDK repository and install it
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | \
+  tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
+  gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+
+RUN apt-get update && \
+  apt-get install -y google-cloud-sdk
+COPY setup.yml /var/jenkins_home/setup.yml
+COPY job_dsl.groovy /usr/local/job_dsl.groovy
+COPY deployement.sh /home/jenkins/deployement.sh
+COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
+ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
+ENV CASC_JENKINS_CONFIG /var/jenkins_home/setup.yml
+RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt
+ENV USER_BEST_PASSWORD admin

@@ -71,6 +71,11 @@
     content: "{{ lookup('file', 'files/job_dsl.groovy') }}"
     dest: "/var/lib/jenkins/"
 
+- name: copy deployement
+  copy:
+    content: "{{ lookup('file', 'files/deployement.sh') }}"
+    dest: "/home/jenkins/"
+
 - name: Apply Jenkins Configuration as Code (JCasC)
   copy:
     content: "{{ lookup('file', 'files/setup.yml') }}"

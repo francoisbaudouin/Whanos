@@ -1,8 +1,8 @@
 all:
   hosts:
     jenkins_instance:
-      ansible_host: 10.1.1.22
+      ansible_host: 127.0.0.1
       ansible_user: test
-      ansible_ssh_private_key_file: /home/francois/.ssh/id_rsa
+      ansible_ssh_private_key_file: ~/.ssh/id_rsa
       ansible_ssh_pass: test
       ansible_become_pass: test
